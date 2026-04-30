@@ -10,7 +10,7 @@
 
 Игнорирует все имена, которые начинаются не с маленькой английской буквы.
 
-Переименует: `move_speed`, `push_bytton`, `cMonster`
+Переименует: `move_speed`, `push_button`, `cMonster`
 
 Проигнорирует: `_ready`, `Player`
 
