@@ -1,0 +1,183 @@
+[gd_scene load_steps=5 format=3 uid="uid://cjf41plrgyxmg"]
+
+[ext_resource type="Script" uid="uid://cgiv7exyphkfy" path="res://obfuscator_q.gd" id="1_ig7tw"]
+[ext_resource type="LabelSettings" uid="uid://cfpdh1x5r21ph" path="res://lbl.tres" id="2_0xm2m"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0xm2m"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 0.18431373)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7dm0k"]
+font_size = 60
+font_color = Color(1, 1, 1, 0.34509805)
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ig7tw")
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12761495, 0.22576481, 0.19958821, 1)
+
+[node name="Panel" type="Panel" parent="BG"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 15.0
+offset_right = -16.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0xm2m")
+
+[node name="Left side" type="Control" parent="."]
+layout_mode = 1
+anchor_right = 0.49800003
+anchor_bottom = 1.0
+offset_right = -27.696045
+grow_vertical = 2
+
+[node name="Logo" type="Label" parent="Left side"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -195.5
+offset_top = 48.0
+offset_right = 195.5
+offset_bottom = 131.0
+grow_horizontal = 2
+text = "Obfuscator-Q"
+label_settings = SubResource("LabelSettings_7dm0k")
+
+[node name="Start btn" type="Button" parent="Left side"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -48.5
+offset_top = 160.0
+offset_right = 48.5
+offset_bottom = 191.0
+grow_horizontal = 2
+text = "Start"
+
+[node name="Label" type="Label" parent="Left side"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -203.5
+offset_top = 208.0
+offset_right = -116.5
+offset_bottom = 231.0
+grow_horizontal = 2
+text = "Ignode dirs"
+label_settings = ExtResource("2_0xm2m")
+
+[node name="Ignore dirs edt" type="TextEdit" parent="Left side"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -227.0
+offset_top = 232.0
+offset_right = 227.0
+offset_bottom = 323.0
+grow_horizontal = 2
+text = "addons, .godot, .export, build, .git, import"
+wrap_mode = 1
+
+[node name="Label2" type="Label" parent="Left side"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -204.5
+offset_top = 344.0
+offset_right = -115.5
+offset_bottom = 367.0
+grow_horizontal = 2
+text = "Ignode files"
+label_settings = ExtResource("2_0xm2m")
+
+[node name="Ignore files edt" type="TextEdit" parent="Left side"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -227.0
+offset_top = 368.0
+offset_right = 227.0
+offset_bottom = 459.0
+grow_horizontal = 2
+wrap_mode = 1
+
+[node name="Label3" type="Label" parent="Left side"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -214.5
+offset_top = 480.0
+offset_right = -105.5
+offset_bottom = 503.0
+grow_horizontal = 2
+text = "Ignode names"
+label_settings = ExtResource("2_0xm2m")
+
+[node name="Ignode names edt" type="TextEdit" parent="Left side"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -227.0
+offset_top = 504.0
+offset_right = 227.0
+offset_bottom = 595.0
+grow_horizontal = 2
+text = "a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, "
+wrap_mode = 1
+
+[node name="Right side" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.503
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 22.543945
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Log lbl" type="Label" parent="Right side"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 23.0
+offset_right = -18.0
+offset_bottom = -19.0
+grow_horizontal = 2
+grow_vertical = 2
+label_settings = ExtResource("2_0xm2m")
+
+[connection signal="pressed" from="Left side/Start btn" to="." method="_on_start_btn_pressed"]
