@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://cjf41plrgyxmg"]
+[gd_scene format=3 uid="uid://cjf41plrgyxmg"]
 
 [ext_resource type="Script" uid="uid://cgiv7exyphkfy" path="res://obfuscator_q.gd" id="1_ig7tw"]
 [ext_resource type="LabelSettings" uid="uid://cfpdh1x5r21ph" path="res://lbl.tres" id="2_0xm2m"]
@@ -15,7 +15,7 @@ border_color = Color(0, 0, 0, 0.18431373)
 font_size = 60
 font_color = Color(1, 1, 1, 0.34509805)
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" unique_id=1268580241]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -24,7 +24,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ig7tw")
 
-[node name="BG" type="ColorRect" parent="."]
+[node name="BG" type="ColorRect" parent="." unique_id=1942815803]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,7 +33,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.12761495, 0.22576481, 0.19958821, 1)
 
-[node name="Panel" type="Panel" parent="BG"]
+[node name="Panel" type="Panel" parent="BG" unique_id=1136802277]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,14 +46,14 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_0xm2m")
 
-[node name="Left side" type="Control" parent="."]
+[node name="Left side" type="Control" parent="." unique_id=1547865222]
 layout_mode = 1
 anchor_right = 0.49800003
 anchor_bottom = 1.0
 offset_right = -27.696045
 grow_vertical = 2
 
-[node name="Logo" type="Label" parent="Left side"]
+[node name="Logo" type="Label" parent="Left side" unique_id=236473139]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -66,7 +66,7 @@ grow_horizontal = 2
 text = "Obfuscator-Q"
 label_settings = SubResource("LabelSettings_7dm0k")
 
-[node name="Start btn" type="Button" parent="Left side"]
+[node name="Start btn" type="Button" parent="Left side" unique_id=1938378526]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -78,7 +78,7 @@ offset_bottom = 191.0
 grow_horizontal = 2
 text = "Start"
 
-[node name="Label" type="Label" parent="Left side"]
+[node name="Label" type="Label" parent="Left side" unique_id=272192624]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -91,7 +91,7 @@ grow_horizontal = 2
 text = "Ignode dirs"
 label_settings = ExtResource("2_0xm2m")
 
-[node name="Ignore dirs edt" type="TextEdit" parent="Left side"]
+[node name="Ignore dirs edt" type="TextEdit" parent="Left side" unique_id=1113838768]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
@@ -103,9 +103,10 @@ offset_right = 227.0
 offset_bottom = 323.0
 grow_horizontal = 2
 text = "addons, .godot, .export, build, .git, import"
+editable = false
 wrap_mode = 1
 
-[node name="Label2" type="Label" parent="Left side"]
+[node name="Label2" type="Label" parent="Left side" unique_id=809743947]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -118,7 +119,7 @@ grow_horizontal = 2
 text = "Ignode files"
 label_settings = ExtResource("2_0xm2m")
 
-[node name="Ignore files edt" type="TextEdit" parent="Left side"]
+[node name="Ignore files edt" type="TextEdit" parent="Left side" unique_id=341343161]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
@@ -129,9 +130,10 @@ offset_top = 368.0
 offset_right = 227.0
 offset_bottom = 459.0
 grow_horizontal = 2
+editable = false
 wrap_mode = 1
 
-[node name="Label3" type="Label" parent="Left side"]
+[node name="Label3" type="Label" parent="Left side" unique_id=1666047133]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -144,7 +146,7 @@ grow_horizontal = 2
 text = "Ignode names"
 label_settings = ExtResource("2_0xm2m")
 
-[node name="Ignode names edt" type="TextEdit" parent="Left side"]
+[node name="Ignore names edt" type="TextEdit" parent="Left side" unique_id=664957517]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 5
@@ -156,9 +158,10 @@ offset_right = 227.0
 offset_bottom = 595.0
 grow_horizontal = 2
 text = "a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, "
+editable = false
 wrap_mode = 1
 
-[node name="Right side" type="Control" parent="."]
+[node name="Right side" type="Control" parent="." unique_id=978620025]
 layout_mode = 1
 anchor_left = 0.503
 anchor_right = 1.0
@@ -167,7 +170,7 @@ offset_left = 22.543945
 grow_horizontal = 0
 grow_vertical = 2
 
-[node name="Log lbl" type="Label" parent="Right side"]
+[node name="Log lbl" type="Label" parent="Right side" unique_id=55406011]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -179,5 +182,10 @@ offset_bottom = -19.0
 grow_horizontal = 2
 grow_vertical = 2
 label_settings = ExtResource("2_0xm2m")
+autowrap_mode = 2
+clip_text = true
 
 [connection signal="pressed" from="Left side/Start btn" to="." method="_on_start_btn_pressed"]
+[connection signal="text_changed" from="Left side/Ignore dirs edt" to="." method="save_ignors"]
+[connection signal="text_changed" from="Left side/Ignore files edt" to="." method="save_ignors"]
+[connection signal="text_changed" from="Left side/Ignore names edt" to="." method="save_ignors"]

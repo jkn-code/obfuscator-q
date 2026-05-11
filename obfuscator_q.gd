@@ -7,15 +7,25 @@ var gd_files
 @onready var label: Label = %"Log lbl"
 
 # 📁 Папки и файлы, которые скрипт полностью пропускает
-@onready var ignore_dirs = get_list(%"Ignore dirs edt")
-@onready var ignore_files = get_list(%"Ignore files edt")
-@onready var ignore_names = get_list(%"Ignode names edt")
+var ignore_dirs: Array
+var ignore_files: Array
+var ignore_names: Array
 
 
 
 func _ready() -> void:
-	print(ignore_names)
+	#load_ignors()
+	#save_ignors()
+	
+	#ignore_dirs = get_list(%"Ignore dirs edt".text)
+	#ignore_files = get_list(%"Ignore files edt".text)
+	#ignore_names = get_list(%"Ignore names edt".text)
+	read_ignor_file()
 	ignore_files.append("obfuscator_q.gd")
+	print("ignore_dirs: ", ignore_dirs)
+	print("ignore_files: ", ignore_files)
+	print("ignore_names: ", ignore_names)
+	
 	label.text = ""
 	_execute()
 
@@ -77,6 +87,7 @@ func go_obf():
 		if content.is_empty(): continue
 		
 		var new_content := _replace_outside_strings(content, mapping)
+		new_content = _strip_comments_and_blanks(new_content)
 		if new_content != content:
 			_write_file(file_path, new_content)
 			changed_count += 1
@@ -131,16 +142,13 @@ func _collect_exports(files: PackedStringArray) -> Dictionary:
 
 func _collect_declarations(files: PackedStringArray, ignore_map: Dictionary) -> Dictionary:
 	var decls := {}
-	#ignore_map += ignore_names
-	#_print("ignore_map="+ str(ignore_map))
 	for nm in ignore_names:
 		ignore_map[nm] = true
-	#print(ignore_map)
+	#_print("ignore_map: "+ str(ignore_map))
 	
 	var re_var := RegEx.new(); re_var.compile("\\bvar\\s+([a-z_][a-zA-Z0-9_]*)")
 	var re_func := RegEx.new(); re_func.compile("\\bfunc\\s+([a-z_][a-zA-Z0-9_]*)\\s*\\(")
 	var re_func_args := RegEx.new(); re_func_args.compile("\\bfunc\\s+[a-zA-Z_][a-zA-Z0-9_]*\\s*\\(([^)]*)\\)")
-	#var re_class_names := RegEx.new(); re_var.compile("\\bre_class_names\\s+([a-z_][a-zA-Z0-9_]*)")
 	var re_class := RegEx.new(); re_class.compile("\\bclass_name\\s+([a-zA-Z_][a-zA-Z0-9_]*)")
 	
 	for f in files:
@@ -199,12 +207,16 @@ func _strip_strings_and_comments(content: String) -> String:
 		i += 1
 	return out
 
+
+var names_num := randi_range(1111,9999)
 func _generate_mapping(names: Array) -> Dictionary:
 	var map := {}
 	var used := {}
 	for name in names:
 		while true:
-			var new_name := "_%d" % randi_range(1000, 9999)
+			#var new_name := "_%d" % randi_range(10000, 99999)
+			names_num += 1
+			var new_name = "_"+ str(names_num)
 			if not used.has(new_name):
 				used[new_name] = true
 				map[name] = new_name
@@ -281,15 +293,129 @@ func _save_mapping(path: String, mapping: Dictionary) -> void:
 	f.close()
 
 
+func _strip_comments_and_blanks(content: String) -> String:
+	var out := ""
+	var i := 0
+	var n := content.length()
+	var current_line := ""
+	
+	while i < n:
+		var c := content[i]
+		# Строки: сохраняем целиком (игнорируем # и \n внутри)
+		if c == '"' or c == "'":
+			var quote := c; current_line += c; i += 1
+			while i < n:
+				if content[i] == '\\': i += 1; current_line += content[i]; i += 1; continue
+				if content[i] == quote: current_line += content[i]; i += 1; break
+				current_line += content[i]; i += 1
+			continue
+		# Комментарии: пропускаем до конца строки
+		if c == '#':
+			while i < n and content[i] != '\n': i += 1
+			continue
+		# Перенос строки: добавляем только если в строке есть контент
+		if c == '\n':
+			if current_line.strip_edges() != "": out += current_line + "\n"
+			current_line = ""; i += 1; continue
+		current_line += c; i += 1
+	if current_line.strip_edges() != "": out += current_line
+	return out
+
+
+
+
+
+
+
+
+
+
+
+
+
 func _print(txt: String):
 	label.text += txt +"\n"
 
-func get_list(edt: TextEdit):
+#func get_list(edt: TextEdit):
+func get_list(txt: String):
 	var res := []
-	for tx in edt.text.split(","):
+	#for tx in edt.text.split(","):
+	for tx in txt.split(","):
 		if tx.strip_edges() != "":
 			res.append(tx.strip_edges())
 	return res
+
+func save_data(data: Dictionary, path: String = "user://obfuscator_q.json") -> void:
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		printerr("Ошибка сохранения: ", FileAccess.get_open_error())
+		return
+	file.store_string(JSON.stringify(data))
+	file.close()
+
+func load_data(path: String = "user://obfuscator_q.json") -> Dictionary:
+	if not FileAccess.file_exists(path):
+		return {}
+	var file = FileAccess.open(path, FileAccess.READ)
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	return parsed if parsed is Dictionary else {}
+
+
+func save_ignors():
+	var data = {}
+	data["ignore dirs"] = %"Ignore dirs edt".text
+	data["ignore files"] = %"Ignore files edt".text
+	data["ignore names"] = %"Ignore names edt".text
+	#print("save data: ", data)
+	save_data(data)
+
+func load_ignors():
+	var data = load_data()
+	#print("load data: ", data)
+	if "ignore dirs" in data: %"Ignore dirs edt".text = data["ignore dirs"]
+	if "ignore files" in data: %"Ignore files edt".text = data["ignore files"]
+	if "ignore names" in data: %"Ignore names edt".text = data["ignore names"]
+
+
+var file_ignores := "obfuscator_q_ignore.txt"
+func read_ignor_file():
+	var file = FileAccess.open(file_ignores, FileAccess.READ)
+	if file:
+		var content = file.get_as_text()
+		file.close()
+		for ln in content.split("\n"):
+			var lnx := ln.split(":")
+			if lnx.size() == 2:
+				if lnx[0].strip_edges() == "dirs":
+					ignore_dirs += get_list(lnx[1])
+					%"Ignore dirs edt".text = lnx[1]
+				if lnx[0].strip_edges() == "files":
+					ignore_files += get_list(lnx[1])
+					%"Ignore files edt".text = lnx[1]
+				if lnx[0].strip_edges() == "names":
+					ignore_names += get_list(lnx[1])
+					%"Ignore names edt".text = lnx[1]
+	else:
+		var tx = "dirs: addons, .godot, .export, build, .git, import\n"
+		tx += "files:\n"
+		tx += "names: a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, "
+		_write_file(file_ignores, tx)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
