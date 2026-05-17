@@ -1,0 +1,3 @@
+dirs: addons, .godot, .export, build, .git, import
+files:
+names: a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, 

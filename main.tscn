@@ -66,6 +66,21 @@ grow_horizontal = 2
 text = "Obfuscator-Q"
 label_settings = SubResource("LabelSettings_7dm0k")
 
+[node name="Ver" type="Label" parent="Left side" unique_id=1963771919]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.39215687)
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = 120.0
+offset_top = 128.0
+offset_right = 225.0
+offset_bottom = 151.0
+grow_horizontal = 2
+text = "ver. 1.0"
+horizontal_alignment = 2
+
 [node name="Start btn" type="Button" parent="Left side" unique_id=1938378526]
 layout_mode = 1
 anchors_preset = 5
@@ -157,9 +172,10 @@ offset_top = 504.0
 offset_right = 227.0
 offset_bottom = 595.0
 grow_horizontal = 2
-text = "a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, "
+text = "a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, type,  keys, values, sort, set, get, "
 editable = false
 wrap_mode = 1
+scroll_vertical = 0.925925925925926
 
 [node name="Right side" type="Control" parent="." unique_id=978620025]
 layout_mode = 1

@@ -14,12 +14,7 @@ var ignore_names: Array
 
 
 func _ready() -> void:
-	#load_ignors()
-	#save_ignors()
-	
-	#ignore_dirs = get_list(%"Ignore dirs edt".text)
-	#ignore_files = get_list(%"Ignore files edt".text)
-	#ignore_names = get_list(%"Ignore names edt".text)
+	%Ver.text = "ver. "+ ProjectSettings.get_setting("application/config/version")
 	read_ignor_file()
 	ignore_files.append("obfuscator_q.gd")
 	print("ignore_dirs: ", ignore_dirs)
@@ -373,9 +368,12 @@ func save_ignors():
 func load_ignors():
 	var data = load_data()
 	#print("load data: ", data)
-	if "ignore dirs" in data: %"Ignore dirs edt".text = data["ignore dirs"]
-	if "ignore files" in data: %"Ignore files edt".text = data["ignore files"]
-	if "ignore names" in data: %"Ignore names edt".text = data["ignore names"]
+	if "ignore dirs" in data: 
+		%"Ignore dirs edt".text = data["ignore dirs"]
+	if "ignore files" in data: 
+		%"Ignore files edt".text = data["ignore files"]
+	if "ignore names" in data: 
+		%"Ignore names edt".text = data["ignore names"]
 
 
 var file_ignores := "obfuscator_q_ignore.txt"
@@ -397,10 +395,11 @@ func read_ignor_file():
 					ignore_names += get_list(lnx[1])
 					%"Ignore names edt".text = lnx[1]
 	else:
-		var tx = "dirs: addons, .godot, .export, build, .git, import\n"
-		tx += "files:\n"
-		tx += "names: a, len, x, y, z, size, show, hide, fov, step, start, stop, play, target_position, timer, color, velocity, mesh, rect, sphere, val, area, index, body, text, "
+		var tx = "dirs: "+ %"Ignore dirs edt".text +"\n"
+		tx += "files: "+ %"Ignore files edt".text +"\n"
+		tx += "names: "+ %"Ignore names edt".text +"\n"
 		_write_file(file_ignores, tx)
+		read_ignor_file()
 
 
 
