@@ -15,23 +15,21 @@ var ignore_names: Array
 
 func _ready() -> void:
 	%Ver.text = "ver. "+ ProjectSettings.get_setting("application/config/version")
-	read_ignor_file()
-	ignore_files.append("obfuscator_q.gd")
-	print("ignore_dirs: ", ignore_dirs)
-	print("ignore_files: ", ignore_files)
-	print("ignore_names: ", ignore_names)
+	
+	# для первого сбора заводских имен
+	#get_builtin_lowercase_names()
 	
 	label.text = ""
 	_execute()
 
 
-func _on_start_btn_pressed() -> void:
-	go_obf()
-
-
 func _execute() -> void:
 	_print("🔍 Запуск обфускатора...")
 	_print("⚠️ Сделайте резервную копию проекта перед запуском!")
+	
+	read_ignor_file()
+	ignore_files.append("obfuscator_q.gd")
+	load_ignore_base_names()
 	
 	#var root_dir = "res://"
 	root_dir = OS.get_executable_path().get_base_dir()
@@ -65,7 +63,9 @@ func _execute() -> void:
 
 
 
-func go_obf():
+func start_obf():
+	read_ignor_file()
+	
 	# 4. Генерация карты замен
 	var mapping := _generate_mapping(targets)
 	
@@ -139,7 +139,6 @@ func _collect_declarations(files: PackedStringArray, ignore_map: Dictionary) -> 
 	var decls := {}
 	for nm in ignore_names:
 		ignore_map[nm] = true
-	#_print("ignore_map: "+ str(ignore_map))
 	
 	var re_var := RegEx.new(); re_var.compile("\\bvar\\s+([a-z_][a-zA-Z0-9_]*)")
 	var re_func := RegEx.new(); re_func.compile("\\bfunc\\s+([a-z_][a-zA-Z0-9_]*)\\s*\\(")
@@ -300,7 +299,11 @@ func _strip_comments_and_blanks(content: String) -> String:
 		if c == '"' or c == "'":
 			var quote := c; current_line += c; i += 1
 			while i < n:
-				if content[i] == '\\': i += 1; current_line += content[i]; i += 1; continue
+				#if content[i] == '\\': i += 1; current_line += content[i]; i += 1; continue
+				if content[i] == '\\':
+					current_line += content.substr(i, 2) # Копирует '\' + следующий символ
+					i += 2
+					continue
 				if content[i] == quote: current_line += content[i]; i += 1; break
 				current_line += content[i]; i += 1
 			continue
@@ -331,49 +334,12 @@ func _strip_comments_and_blanks(content: String) -> String:
 func _print(txt: String):
 	label.text += txt +"\n"
 
-#func get_list(edt: TextEdit):
 func get_list(txt: String):
 	var res := []
-	#for tx in edt.text.split(","):
 	for tx in txt.split(","):
 		if tx.strip_edges() != "":
 			res.append(tx.strip_edges())
 	return res
-
-func save_data(data: Dictionary, path: String = "user://obfuscator_q.json") -> void:
-	var file = FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
-		printerr("Ошибка сохранения: ", FileAccess.get_open_error())
-		return
-	file.store_string(JSON.stringify(data))
-	file.close()
-
-func load_data(path: String = "user://obfuscator_q.json") -> Dictionary:
-	if not FileAccess.file_exists(path):
-		return {}
-	var file = FileAccess.open(path, FileAccess.READ)
-	var parsed = JSON.parse_string(file.get_as_text())
-	file.close()
-	return parsed if parsed is Dictionary else {}
-
-
-func save_ignors():
-	var data = {}
-	data["ignore dirs"] = %"Ignore dirs edt".text
-	data["ignore files"] = %"Ignore files edt".text
-	data["ignore names"] = %"Ignore names edt".text
-	#print("save data: ", data)
-	save_data(data)
-
-func load_ignors():
-	var data = load_data()
-	#print("load data: ", data)
-	if "ignore dirs" in data: 
-		%"Ignore dirs edt".text = data["ignore dirs"]
-	if "ignore files" in data: 
-		%"Ignore files edt".text = data["ignore files"]
-	if "ignore names" in data: 
-		%"Ignore names edt".text = data["ignore names"]
 
 
 var file_ignores := "obfuscator_q_ignore.txt"
@@ -387,30 +353,58 @@ func read_ignor_file():
 			if lnx.size() == 2:
 				if lnx[0].strip_edges() == "dirs":
 					ignore_dirs += get_list(lnx[1])
-					%"Ignore dirs edt".text = lnx[1]
 				if lnx[0].strip_edges() == "files":
 					ignore_files += get_list(lnx[1])
-					%"Ignore files edt".text = lnx[1]
 				if lnx[0].strip_edges() == "names":
 					ignore_names += get_list(lnx[1])
-					%"Ignore names edt".text = lnx[1]
+		_print("📂 Файл obfuscator_q_ignore.txt прочитан.")
 	else:
-		var tx = "dirs: "+ %"Ignore dirs edt".text +"\n"
-		tx += "files: "+ %"Ignore files edt".text +"\n"
-		tx += "names: "+ %"Ignore names edt".text +"\n"
+		var tx = "dirs:  addons, .godot, .export, build, .git, import\n"
+		tx += "files: \n"
+		tx += "names: "+ load_ignore_base_names()
 		_write_file(file_ignores, tx)
+		_print("💾 Создан файл obfuscator_q_ignore.txt. Внесите в него дополнения, если нужно.")
 		read_ignor_file()
 
 
 
 
+func get_builtin_lowercase_names():
+	var builtins := {}
+	for cls in ClassDB.get_class_list():
+		for p in ClassDB.class_get_property_list(cls, true):
+			var n: String = p["name"]
+			if not n.is_empty() and n[0] >= "a" and n[0] <= "z" and not n.begins_with("_") and n.is_valid_identifier():
+				builtins[n] = true
+		for m in ClassDB.class_get_method_list(cls, true):
+			var n: String = m["name"]
+			if not n.is_empty() and n[0] >= "a" and n[0] <= "z" and not n.begins_with("_") and n.is_valid_identifier():
+				builtins[n] = true
+	save_ignore_names(builtins.keys())
 
 
 
 
 
+const NAMES_FILE := "res://ignore_names.dat"
 
+func save_ignore_names(arr: Array) -> void:
+	var file := FileAccess.open(NAMES_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(", ".join(arr))
+		_print("💾 ignore_names сохранён (%d шт.)" % ignore_names.size())
+	else:
+		_print("no save ignor names")
 
+func load_ignore_base_names() -> String:
+	var res := ""
+	if not FileAccess.file_exists(NAMES_FILE): 
+		print("NO IGNOR BASE NAMES FILE")
+		return ""
+	var file := FileAccess.open(NAMES_FILE, FileAccess.READ)
+	if file:
+		res = file.get_as_text()
+	return res
 
 
 
